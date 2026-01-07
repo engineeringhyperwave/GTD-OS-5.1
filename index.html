@@ -3,100 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTD OS v5.2 - The Full Status Edition</title>
+    <title>GTD OS v5.3 - Large Text Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --primary: #2563eb; }
-        .stuck-project { border-left: 6px solid #ef4444 !important; }
-        .tab-active { color: var(--primary); border-right: 4px solid var(--primary); background: #eff6ff; font-weight: bold; }
-        .area-tag { background: #f1f5f9; color: #475569; font-size: 9px; padding: 2px 8px; border-radius: 4px; font-weight: 800; text-transform: uppercase; }
-        body { font-family: 'Inter', system-ui, sans-serif; }
+        .stuck-project { border-left: 8px solid #ef4444 !important; }
+        .tab-active { color: var(--primary); border-right: 5px solid var(--primary); background: #eff6ff; font-weight: bold; }
+        /* 标签字号放大 */
+        .area-tag { background: #f1f5f9; color: #475569; font-size: 12px; padding: 4px 10px; border-radius: 6px; font-weight: 800; text-transform: uppercase; }
+        /* 全局基础字号放大 */
+        body { font-family: 'Inter', system-ui, sans-serif; font-size: 16px; }
     </style>
 </head>
-<body class="bg-slate-50 flex h-screen overflow-hidden text-slate-900 text-sm">
+<body class="bg-slate-50 flex h-screen overflow-hidden text-slate-900">
 
-<!-- 侧边栏保持简洁 -->
-<aside class="w-72 border-r bg-white flex flex-col h-full flex-shrink-0">
-    <div class="p-8"><h1 class="text-2xl font-black tracking-tighter text-blue-600 italic">GTD OS 5.2</h1></div>
-    <div class="px-6 mb-4">
-        <input type="text" id="globalSearch" oninput="render()" placeholder="🔍 搜索所有维度..." class="w-full bg-slate-100 border-none rounded-xl p-2 text-xs outline-none">
+<!-- 侧边栏 -->
+<aside class="w-80 border-r bg-white flex flex-col h-full flex-shrink-0">
+    <div class="p-8"><h1 class="text-3xl font-black tracking-tighter text-blue-600 italic">GTD OS 5.3</h1></div>
+    <div class="px-6 mb-6">
+        <input type="text" id="globalSearch" oninput="render()" placeholder="🔍 搜索所有维度..." class="w-full bg-slate-100 border-none rounded-xl p-3 text-sm outline-none">
     </div>
-    <nav class="flex-1 overflow-y-auto px-4 space-y-1">
-        <button onclick="setFilter('status','inbox')" id="btn-inbox" class="w-full text-left px-4 py-2 rounded-lg transition flex justify-between text-xs">📥 收件箱 <span id="badge-inbox"></span></button>
-        <button onclick="setFilter('status','projects')" id="btn-projects" class="w-full text-left px-4 py-2 rounded-lg transition flex justify-between text-xs">📦 项目 (10k') <span id="badge-stuck"></span></button>
-        <button onclick="setFilter('status','next')" id="btn-next" class="w-full text-left px-4 py-2 rounded-lg transition text-xs">🚀 下一步 (Ground)</button>
-        <button onclick="setFilter('status','waiting')" id="btn-waiting" class="w-full text-left px-4 py-2 rounded-lg transition text-xs">⏳ 等待清单</button>
-        <button onclick="setFilter('status','someday')" id="btn-someday" class="w-full text-left px-4 py-2 rounded-lg transition text-xs">💤 也许/孵化</button>
-        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 mt-6 mb-2">执行情境 (Contexts)</div>
-        <div id="context-list" class="space-y-0.5"></div>
+    <nav class="flex-1 overflow-y-auto px-4 space-y-2">
+        <button onclick="setFilter('status','inbox')" id="btn-inbox" class="w-full text-left px-4 py-3 rounded-xl transition flex justify-between text-base font-medium">📥 收件箱 <span id="badge-inbox" class="text-blue-600 font-bold"></span></button>
+        <button onclick="setFilter('status','projects')" id="btn-projects" class="w-full text-left px-4 py-3 rounded-xl transition flex justify-between text-base font-medium">📦 项目 (10k') <span id="badge-stuck"></span></button>
+        <button onclick="setFilter('status','next')" id="btn-next" class="w-full text-left px-4 py-3 rounded-xl transition text-base font-medium">🚀 下一步 (Ground)</button>
+        <button onclick="setFilter('status','waiting')" id="btn-waiting" class="w-full text-left px-4 py-3 rounded-xl transition text-base font-medium">⏳ 等待清单</button>
+        <button onclick="setFilter('status','someday')" id="btn-someday" class="w-full text-left px-4 py-3 rounded-xl transition text-base font-medium">💤 也许/孵化</button>
+        
+        <div class="text-xs font-bold text-slate-400 uppercase tracking-widest px-4 mt-8 mb-2">执行情境 (Contexts)</div>
+        <div id="context-list" class="space-y-1"></div>
     </nav>
-    <div class="p-4 border-t text-center">
-        <button onclick="exportData()" class="text-[10px] text-slate-300 hover:text-blue-600 font-bold">💾 导出 JSON 备份</button>
+    <div class="p-6 border-t text-center">
+        <button onclick="exportData()" class="text-sm text-slate-400 hover:text-blue-600 font-bold tracking-wide">💾 导出 JSON 备份数据</button>
     </div>
 </aside>
 
 <!-- 主区 -->
 <main class="flex-1 flex flex-col h-full">
-    <header class="h-20 bg-white border-b flex items-center px-10 gap-6">
-        <input type="text" id="quickInput" placeholder="捕捉... 使用 @情境 #项目 快速标记" class="flex-1 text-lg border-none outline-none">
-        <button onclick="alert('每周回顾：请审视项目的 PURPOSE 是否依然值得你投入。')" class="text-xs bg-slate-100 px-4 py-2 rounded-full font-bold">高空审视模式</button>
+    <header class="h-24 bg-white border-b flex items-center px-10 gap-6">
+        <input type="text" id="quickInput" placeholder="在此捕捉你的想法... 按 Enter 存入收件箱" class="flex-1 text-2xl border-none outline-none font-medium placeholder:text-slate-300">
+        <button onclick="alert('每周回顾建议：\n1. 清空收件箱\n2. 检查项目是否都有下一步动作\n3. 审视也许清单')" class="text-sm bg-blue-600 text-white px-6 py-3 rounded-full font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition">高空审视</button>
     </header>
-    <section id="listView" class="flex-1 overflow-y-auto p-10 space-y-4 bg-slate-50/50"></section>
+    <section id="listView" class="flex-1 overflow-y-auto p-10 space-y-6 bg-slate-50/50"></section>
 </main>
 
-<!-- 编辑/理清模态框 (修正版：补齐了所有切换选项) -->
-<div id="editModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden">
-        <div class="p-8">
-            <textarea id="editTitle" class="w-full text-xl font-bold border-none focus:ring-0 p-0 mb-4 resize-none outline-none" rows="2"></textarea>
+<!-- 编辑/理清模态框 -->
+<div id="editModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[300] flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-2xl rounded-[2rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+        <div class="p-10">
+            <textarea id="editTitle" class="w-full text-2xl font-bold border-none focus:ring-0 p-0 mb-6 resize-none outline-none text-slate-800" rows="2" placeholder="事务名称"></textarea>
             
             <!-- 项目专有的 Why 和 Area -->
-            <div id="projectMeta" class="mb-6 p-4 bg-blue-50/50 rounded-2xl space-y-3 hidden">
+            <div id="projectMeta" class="mb-8 p-6 bg-blue-50 rounded-2xl space-y-4 hidden border border-blue-100">
                 <div>
-                    <label class="text-[10px] font-bold text-blue-400 uppercase">Why? (项目目的/成功愿景)</label>
-                    <input type="text" id="editPurpose" placeholder="完成后会是什么样？为什么重要？" class="w-full bg-transparent border-b border-blue-100 py-1 outline-none text-blue-800 italic">
+                    <label class="text-xs font-bold text-blue-500 uppercase tracking-wider mb-1 block">Why? (项目目的/成功愿景)</label>
+                    <input type="text" id="editPurpose" placeholder="完成后会是什么样？为什么重要？" class="w-full bg-transparent border-b border-blue-200 py-2 outline-none text-blue-900 italic text-lg">
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold text-blue-400 uppercase">Area (所属人生领域)</label>
-                    <input type="text" id="editArea" placeholder="个人成长, 职业规划, 健康, 财务..." class="w-full bg-transparent border-b border-blue-100 py-1 outline-none font-bold">
+                    <label class="text-xs font-bold text-blue-500 uppercase tracking-wider mb-1 block">Area (所属人生领域)</label>
+                    <input type="text" id="editArea" placeholder="如：职业成长, 健康, 家庭..." class="w-full bg-transparent border-b border-blue-200 py-2 outline-none font-bold text-lg">
                 </div>
             </div>
 
             <!-- 核心：理清路径的四个大按钮 -->
-            <label class="text-[10px] font-bold text-slate-300 uppercase block mb-2">理清这个事务的去向：</label>
-            <div class="grid grid-cols-2 gap-2 mb-6">
-                <button onclick="updateStatus('next')" class="p-3 border rounded-xl hover:bg-blue-50 text-left transition group">
-                    <span class="block font-bold text-slate-700">🚀 下一步</span>
-                    <span class="text-[10px] text-slate-400">尽快执行动作</span>
+            <label class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-4">理清这个事务的去向：</label>
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <button onclick="updateStatus('next')" class="p-5 border-2 border-slate-100 rounded-2xl hover:border-blue-500 hover:bg-blue-50 text-left transition group">
+                    <span class="block font-bold text-blue-700 text-lg">🚀 下一步</span>
+                    <span class="text-xs text-slate-500 mt-1 block leading-relaxed">标记为立刻可以执行的具体动作。</span>
                 </button>
-                <button onclick="updateStatus('projects')" class="p-3 border rounded-xl hover:bg-purple-50 text-left transition">
-                    <span class="block font-bold text-purple-700 font-bold">📦 升格为项目</span>
-                    <span class="text-[10px] text-purple-400">需多步达成</span>
+                <button onclick="updateStatus('projects')" class="p-5 border-2 border-slate-100 rounded-2xl hover:border-purple-500 hover:bg-purple-50 text-left transition">
+                    <span class="block font-bold text-purple-700 text-lg">📦 升格为项目</span>
+                    <span class="text-xs text-slate-500 mt-1 block leading-relaxed">如果这件事需要多个步骤才能完成，将其升格为项目。</span>
                 </button>
-                <button onclick="updateStatus('waiting')" class="p-3 border rounded-xl hover:bg-amber-50 text-left transition">
-                    <span class="block font-bold text-amber-600">⏳ 等待清单</span>
-                    <span class="text-[10px] text-amber-400">委派他人/等待回复</span>
+                <button onclick="updateStatus('waiting')" class="p-5 border-2 border-slate-100 rounded-2xl hover:border-amber-500 hover:bg-amber-50 text-left transition">
+                    <span class="block font-bold text-amber-600 text-lg">⏳ 等待清单</span>
+                    <span class="text-xs text-slate-500 mt-1 block leading-relaxed">这件事交给了别人处理，或者在等待某个结果。</span>
                 </button>
-                <button onclick="updateStatus('someday')" class="p-3 border rounded-xl hover:bg-slate-100 text-left transition">
-                    <span class="block font-bold text-slate-600">💤 也许/孵化</span>
-                    <span class="text-[10px] text-slate-400">以后再说/暂不处理</span>
+                <button onclick="updateStatus('someday')" class="p-5 border-2 border-slate-100 rounded-2xl hover:border-slate-400 hover:bg-slate-100 text-left transition">
+                    <span class="block font-bold text-slate-600 text-lg">💤 也许/孵化</span>
+                    <span class="text-xs text-slate-500 mt-1 block leading-relaxed">现在不做，未来可能做。</span>
                 </button>
             </div>
 
-            <div class="flex gap-3">
+            <div class="flex gap-6">
                 <div class="flex-1">
-                    <label class="text-[10px] font-bold text-slate-300 uppercase">Context (@情境)</label>
-                    <input type="text" id="editContext" placeholder="@电脑..." class="w-full bg-slate-50 rounded-lg p-2 outline-none border border-transparent focus:border-blue-200">
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Context (@情境)</label>
+                    <input type="text" id="editContext" placeholder="例如：@电脑, @办公室..." class="w-full bg-slate-50 rounded-xl p-3 outline-none border border-slate-100 focus:border-blue-400 text-base">
                 </div>
                 <div class="flex-1" id="parentSelectBox">
-                    <label class="text-[10px] font-bold text-slate-300 uppercase">Parent Project (所属项目)</label>
-                    <select id="editParent" class="w-full bg-slate-50 rounded-lg p-2 outline-none border border-transparent focus:border-blue-200"></select>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Parent Project (所属项目)</label>
+                    <select id="editParent" class="w-full bg-slate-50 rounded-xl p-3 outline-none border border-slate-100 focus:border-blue-400 text-base"></select>
                 </div>
             </div>
         </div>
-        <div class="bg-slate-50 px-8 py-4 flex justify-between items-center">
-            <button onclick="deleteItem()" class="text-red-400 text-xs hover:text-red-600 font-bold">🗑️ 彻底删除</button>
-            <button onclick="saveChanges()" class="bg-blue-600 text-white px-8 py-2 rounded-xl text-xs font-bold hover:bg-blue-700 transition">保存修改</button>
+        <div class="bg-slate-50 px-10 py-6 flex justify-between items-center border-t">
+            <button onclick="deleteItem()" class="text-red-500 text-sm hover:text-red-700 font-bold uppercase tracking-wider">🗑️ 彻底删除</button>
+            <button onclick="saveChanges()" class="bg-slate-900 text-white px-10 py-3 rounded-2xl text-base font-bold hover:bg-black transition shadow-xl">完成理清</button>
         </div>
     </div>
 </div>
@@ -120,7 +123,7 @@
 
         // 更新 Context 列表
         document.getElementById('context-list').innerHTML = db.contexts.map(c => `
-            <button onclick="setFilter('context','${c}')" id="btn-ctx-${c}" class="w-full text-left px-4 py-1 text-[11px] text-slate-500 hover:bg-slate-100 rounded-lg transition">${c}</button>
+            <button onclick="setFilter('context','${c}')" id="btn-ctx-${c}" class="w-full text-left px-4 py-2 text-sm text-slate-500 hover:bg-slate-100 rounded-xl transition font-medium">${c}</button>
         `).join('');
 
         let display = (filter.type === 'status') ? list.filter(i => i.status === filter.value) : list.filter(i => i.context === filter.value);
@@ -129,45 +132,47 @@
             view.innerHTML = display.map(p => {
                 const subs = db.items.filter(i => i.parentId === p.id && !i.done);
                 return `
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border-2 ${subs.length === 0 ? 'stuck-project' : 'border-transparent'} transition hover:shadow-md">
-                        <div class="flex justify-between items-start">
+                    <div class="bg-white p-8 rounded-[2rem] shadow-sm border-2 ${subs.length === 0 ? 'stuck-project' : 'border-transparent'} transition hover:shadow-xl relative group">
+                        <div class="flex justify-between items-start mb-4">
                             <div>
-                                <div class="flex items-center gap-2 mb-1">
-                                    <h3 class="text-xl font-black">${p.text}</h3>
+                                <div class="flex items-center gap-3 mb-2">
+                                    <h3 class="text-2xl font-black text-slate-800">${p.text}</h3>
                                     ${p.area ? `<span class="area-tag">${p.area}</span>` : ''}
                                 </div>
-                                ${p.purpose ? `<p class="text-xs text-blue-500 italic mb-4">Why: ${p.purpose}</p>` : ''}
+                                ${p.purpose ? `<p class="text-sm text-blue-500 italic font-medium">目标: ${p.purpose}</p>` : ''}
                             </div>
-                            <button onclick="openEdit(${p.id})" class="text-[10px] text-slate-300 hover:text-blue-600 font-bold uppercase">Specs</button>
+                            <button onclick="openEdit(${p.id})" class="text-xs bg-slate-100 px-3 py-1.5 rounded-lg text-slate-400 hover:text-blue-600 font-bold uppercase transition">编辑项目属性</button>
                         </div>
-                        <div class="space-y-1.5 border-t pt-4">
-                            ${subs.map(s => `<div class="text-xs text-slate-500 flex items-center gap-2"><span>→</span> ${s.text}</div>`).join('')}
-                            <button onclick="quickAction(${p.id})" class="text-blue-600 text-[10px] font-black mt-2 hover:underline">+ 增加下一步行动</button>
+                        <div class="space-y-3 border-t pt-6">
+                            ${subs.map(s => `<div class="text-base text-slate-600 flex items-center gap-3 font-medium">
+                                <span class="text-blue-400 font-bold">↳</span> ${s.text}
+                            </div>`).join('')}
+                            <button onclick="quickAction(${p.id})" class="text-blue-600 text-sm font-black mt-4 px-4 py-2 bg-blue-50 rounded-xl hover:bg-blue-100 transition inline-block">+ 拆解下一步行动</button>
                         </div>
                     </div>
                 `;
             }).join('');
         } else {
-            view.innerHTML = display.length === 0 ? `<div class="text-center py-20 text-slate-300 italic">清单空空如也，心如止水。</div>` : 
+            view.innerHTML = display.length === 0 ? `<div class="text-center py-24 text-slate-300 italic text-xl">清单空空如也，心如止水。</div>` : 
                 display.map(i => `
-                    <div class="bg-white p-4 rounded-2xl shadow-sm flex items-center justify-between group hover:shadow-md transition">
-                        <div class="flex items-center gap-4">
-                            <input type="checkbox" onchange="completeItem(${i.id})" class="w-5 h-5 rounded-full border-slate-200 text-blue-600 focus:ring-0">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm flex items-center justify-between group hover:shadow-lg transition-all border border-transparent hover:border-blue-100">
+                        <div class="flex items-center gap-6">
+                            <input type="checkbox" onchange="completeItem(${i.id})" class="w-7 h-7 rounded-full border-slate-300 text-blue-600 focus:ring-0 cursor-pointer">
                             <div>
-                                <div class="font-bold text-slate-700">${i.text}</div>
-                                <div class="flex gap-2 mt-1">
-                                    ${i.context ? `<span class="text-[9px] font-bold text-blue-400 uppercase tracking-tighter">${i.context}</span>` : ''}
-                                    ${i.parentId ? `<span class="text-[9px] font-bold text-purple-300 uppercase tracking-tighter">📌 ${db.items.find(p=>p.id===i.parentId)?.text}</span>` : ''}
+                                <div class="text-xl font-bold text-slate-700">${i.text}</div>
+                                <div class="flex gap-3 mt-2">
+                                    ${i.context ? `<span class="text-xs font-black text-blue-500 bg-blue-50 px-2 py-0.5 rounded uppercase">${i.context}</span>` : ''}
+                                    ${i.parentId ? `<span class="text-xs font-black text-purple-400 bg-purple-50 px-2 py-0.5 rounded uppercase">📌 ${db.items.find(p=>p.id===i.parentId)?.text}</span>` : ''}
                                 </div>
                             </div>
                         </div>
-                        <button onclick="openEdit(${i.id})" class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-blue-600 transition">⚙️</button>
+                        <button onclick="openEdit(${i.id})" class="opacity-0 group-hover:opacity-100 bg-slate-100 p-3 rounded-xl text-slate-400 hover:text-blue-600 transition-all text-xl">⚙️</button>
                     </div>
                 `).join('');
         }
         document.getElementById('badge-inbox').innerText = db.items.filter(i => i.status === 'inbox' && !i.done).length || '';
         const stuck = db.items.filter(i => i.status === 'projects' && !i.done && !db.items.some(a => a.parentId === i.id && !a.done)).length;
-        document.getElementById('badge-stuck').innerText = stuck ? `🛑 ${stuck}` : '';
+        document.getElementById('badge-stuck').innerText = stuck ? `🛑 ${stuck}个停滞` : '';
     }
 
     function openEdit(id) {
@@ -190,6 +195,7 @@
 
     function saveChanges() {
         const item = db.items.find(i => i.id === editingId);
+        if(!item) return;
         item.text = document.getElementById('editTitle').value;
         item.context = document.getElementById('editContext').value;
         item.purpose = document.getElementById('editPurpose').value;
@@ -206,11 +212,18 @@
     }
 
     function setFilter(t, v) { filter = { type: t, value: v }; render(); }
-    function completeItem(id) { db.items.find(i => i.id === id).done = true; save(); }
+    function completeItem(id) { 
+        const item = db.items.find(i => i.id === id);
+        if(item) {
+            item.done = true; 
+            // 如果是项目完成，不一定代表子任务完成，但GTD逻辑通常建议先清空子任务
+            save(); 
+        }
+    }
     function closeModal() { document.getElementById('editModal').classList.add('hidden'); }
-    function deleteItem() { db.items = db.items.filter(i => i.id !== editingId); closeModal(); save(); }
-    function quickAction(pid) { const t = prompt("下一步行动是什么？"); if(t) { db.items.push({ id: Date.now(), text: t, status: 'next', parentId: pid, done: false }); save(); } }
-    function exportData() { const blob = new Blob([JSON.stringify(db)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `GTD_Backup.json`; a.click(); }
+    function deleteItem() { if(confirm('确定要永久删除这个事务吗？')) { db.items = db.items.filter(i => i.id !== editingId); closeModal(); save(); } }
+    function quickAction(pid) { const t = prompt("下一步具体要做什么？"); if(t) { db.items.push({ id: Date.now(), text: t, status: 'next', parentId: pid, done: false }); save(); } }
+    function exportData() { const blob = new Blob([JSON.stringify(db)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `GTD_Backup_${new Date().toLocaleDateString()}.json`; a.click(); }
 
     document.getElementById('quickInput').addEventListener('keypress', (e) => {
         if(e.key === 'Enter' && e.target.value) {
