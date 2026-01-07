@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTD OS v5.1 - The Why Edition</title>
+    <title>GTD OS v5.2 - The Full Status Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --primary: #2563eb; }
@@ -17,21 +17,21 @@
 
 <!-- 侧边栏保持简洁 -->
 <aside class="w-72 border-r bg-white flex flex-col h-full flex-shrink-0">
-    <div class="p-8"><h1 class="text-2xl font-black tracking-tighter text-blue-600 italic">GTD OS 5.1</h1></div>
+    <div class="p-8"><h1 class="text-2xl font-black tracking-tighter text-blue-600 italic">GTD OS 5.2</h1></div>
     <div class="px-6 mb-4">
         <input type="text" id="globalSearch" oninput="render()" placeholder="🔍 搜索所有维度..." class="w-full bg-slate-100 border-none rounded-xl p-2 text-xs outline-none">
     </div>
     <nav class="flex-1 overflow-y-auto px-4 space-y-1">
-        <button onclick="setFilter('status','inbox')" id="btn-inbox" class="w-full text-left px-4 py-2 rounded-lg transition flex justify-between">📥 收件箱 <span id="badge-inbox"></span></button>
-        <button onclick="setFilter('status','projects')" id="btn-projects" class="w-full text-left px-4 py-2 rounded-lg transition flex justify-between">📦 项目 (10k') <span id="badge-stuck"></span></button>
-        <button onclick="setFilter('status','next')" id="btn-next" class="w-full text-left px-4 py-2 rounded-lg transition">🚀 下一步 (Ground)</button>
-        <button onclick="setFilter('status','waiting')" id="btn-waiting" class="w-full text-left px-4 py-2 rounded-lg transition">⏳ 等待清单</button>
-        <button onclick="setFilter('status','someday')" id="btn-someday" class="w-full text-left px-4 py-2 rounded-lg transition">💤 也许/孵化</button>
+        <button onclick="setFilter('status','inbox')" id="btn-inbox" class="w-full text-left px-4 py-2 rounded-lg transition flex justify-between text-xs">📥 收件箱 <span id="badge-inbox"></span></button>
+        <button onclick="setFilter('status','projects')" id="btn-projects" class="w-full text-left px-4 py-2 rounded-lg transition flex justify-between text-xs">📦 项目 (10k') <span id="badge-stuck"></span></button>
+        <button onclick="setFilter('status','next')" id="btn-next" class="w-full text-left px-4 py-2 rounded-lg transition text-xs">🚀 下一步 (Ground)</button>
+        <button onclick="setFilter('status','waiting')" id="btn-waiting" class="w-full text-left px-4 py-2 rounded-lg transition text-xs">⏳ 等待清单</button>
+        <button onclick="setFilter('status','someday')" id="btn-someday" class="w-full text-left px-4 py-2 rounded-lg transition text-xs">💤 也许/孵化</button>
         <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 mt-6 mb-2">执行情境 (Contexts)</div>
         <div id="context-list" class="space-y-0.5"></div>
     </nav>
     <div class="p-4 border-t text-center">
-        <button onclick="exportData()" class="text-[10px] text-slate-300 hover:text-blue-600">备份外部大脑 (JSON)</button>
+        <button onclick="exportData()" class="text-[10px] text-slate-300 hover:text-blue-600 font-bold">💾 导出 JSON 备份</button>
     </div>
 </aside>
 
@@ -44,12 +44,13 @@
     <section id="listView" class="flex-1 overflow-y-auto p-10 space-y-4 bg-slate-50/50"></section>
 </main>
 
-<!-- 编辑/理清模态框 (核心升级区) -->
+<!-- 编辑/理清模态框 (修正版：补齐了所有切换选项) -->
 <div id="editModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden">
         <div class="p-8">
-            <textarea id="editTitle" class="w-full text-xl font-bold border-none focus:ring-0 p-0 mb-4 resize-none"></textarea>
+            <textarea id="editTitle" class="w-full text-xl font-bold border-none focus:ring-0 p-0 mb-4 resize-none outline-none" rows="2"></textarea>
             
+            <!-- 项目专有的 Why 和 Area -->
             <div id="projectMeta" class="mb-6 p-4 bg-blue-50/50 rounded-2xl space-y-3 hidden">
                 <div>
                     <label class="text-[10px] font-bold text-blue-400 uppercase">Why? (项目目的/成功愿景)</label>
@@ -61,35 +62,51 @@
                 </div>
             </div>
 
+            <!-- 核心：理清路径的四个大按钮 -->
+            <label class="text-[10px] font-bold text-slate-300 uppercase block mb-2">理清这个事务的去向：</label>
             <div class="grid grid-cols-2 gap-2 mb-6">
-                <button onclick="updateStatus('next')" class="p-2 border rounded-xl hover:bg-slate-50">🚀 下一步</button>
-                <button onclick="updateStatus('projects')" class="p-2 border rounded-xl bg-purple-50 border-purple-100 text-purple-700 font-bold">📦 升格为项目</button>
+                <button onclick="updateStatus('next')" class="p-3 border rounded-xl hover:bg-blue-50 text-left transition group">
+                    <span class="block font-bold text-slate-700">🚀 下一步</span>
+                    <span class="text-[10px] text-slate-400">尽快执行动作</span>
+                </button>
+                <button onclick="updateStatus('projects')" class="p-3 border rounded-xl hover:bg-purple-50 text-left transition">
+                    <span class="block font-bold text-purple-700 font-bold">📦 升格为项目</span>
+                    <span class="text-[10px] text-purple-400">需多步达成</span>
+                </button>
+                <button onclick="updateStatus('waiting')" class="p-3 border rounded-xl hover:bg-amber-50 text-left transition">
+                    <span class="block font-bold text-amber-600">⏳ 等待清单</span>
+                    <span class="text-[10px] text-amber-400">委派他人/等待回复</span>
+                </button>
+                <button onclick="updateStatus('someday')" class="p-3 border rounded-xl hover:bg-slate-100 text-left transition">
+                    <span class="block font-bold text-slate-600">💤 也许/孵化</span>
+                    <span class="text-[10px] text-slate-400">以后再说/暂不处理</span>
+                </button>
             </div>
 
             <div class="flex gap-3">
                 <div class="flex-1">
-                    <label class="text-[10px] font-bold text-slate-300 uppercase">Context</label>
-                    <input type="text" id="editContext" class="w-full bg-slate-50 rounded-lg p-2 outline-none">
+                    <label class="text-[10px] font-bold text-slate-300 uppercase">Context (@情境)</label>
+                    <input type="text" id="editContext" placeholder="@电脑..." class="w-full bg-slate-50 rounded-lg p-2 outline-none border border-transparent focus:border-blue-200">
                 </div>
                 <div class="flex-1" id="parentSelectBox">
-                    <label class="text-[10px] font-bold text-slate-300 uppercase">Parent Project</label>
-                    <select id="editParent" class="w-full bg-slate-50 rounded-lg p-2 outline-none"></select>
+                    <label class="text-[10px] font-bold text-slate-300 uppercase">Parent Project (所属项目)</label>
+                    <select id="editParent" class="w-full bg-slate-50 rounded-lg p-2 outline-none border border-transparent focus:border-blue-200"></select>
                 </div>
             </div>
         </div>
-        <div class="bg-slate-50 px-8 py-4 flex justify-between">
-            <button onclick="deleteItem()" class="text-red-400 text-xs">彻底删除</button>
-            <button onclick="saveChanges()" class="bg-blue-600 text-white px-8 py-2 rounded-xl text-xs font-bold">保存修改</button>
+        <div class="bg-slate-50 px-8 py-4 flex justify-between items-center">
+            <button onclick="deleteItem()" class="text-red-400 text-xs hover:text-red-600 font-bold">🗑️ 彻底删除</button>
+            <button onclick="saveChanges()" class="bg-blue-600 text-white px-8 py-2 rounded-xl text-xs font-bold hover:bg-blue-700 transition">保存修改</button>
         </div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('gtd_v51_data')) || { items: [], contexts: [] };
+    let db = JSON.parse(localStorage.getItem('gtd_v52_data')) || { items: [], contexts: [] };
     let filter = { type: 'status', value: 'inbox' };
     let editingId = null;
 
-    function save() { localStorage.setItem('gtd_v51_data', JSON.stringify(db)); render(); }
+    function save() { localStorage.setItem('gtd_v52_data', JSON.stringify(db)); render(); }
 
     function render() {
         const view = document.getElementById('listView');
@@ -101,9 +118,9 @@
         const btn = document.getElementById('btn-' + filter.value) || document.getElementById('btn-ctx-' + filter.value);
         if(btn) btn.classList.add('tab-active');
 
-        // 情境列表
+        // 更新 Context 列表
         document.getElementById('context-list').innerHTML = db.contexts.map(c => `
-            <button onclick="setFilter('context','${c}')" id="btn-ctx-${c}" class="w-full text-left px-4 py-1 text-[11px] text-slate-500 hover:bg-slate-100 rounded-lg">${c}</button>
+            <button onclick="setFilter('context','${c}')" id="btn-ctx-${c}" class="w-full text-left px-4 py-1 text-[11px] text-slate-500 hover:bg-slate-100 rounded-lg transition">${c}</button>
         `).join('');
 
         let display = (filter.type === 'status') ? list.filter(i => i.status === filter.value) : list.filter(i => i.context === filter.value);
@@ -112,7 +129,7 @@
             view.innerHTML = display.map(p => {
                 const subs = db.items.filter(i => i.parentId === p.id && !i.done);
                 return `
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border-2 ${subs.length === 0 ? 'stuck-project' : 'border-transparent'}">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border-2 ${subs.length === 0 ? 'stuck-project' : 'border-transparent'} transition hover:shadow-md">
                         <div class="flex justify-between items-start">
                             <div>
                                 <div class="flex items-center gap-2 mb-1">
@@ -124,30 +141,33 @@
                             <button onclick="openEdit(${p.id})" class="text-[10px] text-slate-300 hover:text-blue-600 font-bold uppercase">Specs</button>
                         </div>
                         <div class="space-y-1.5 border-t pt-4">
-                            ${subs.map(s => `<div class="text-xs text-slate-500">→ ${s.text}</div>`).join('')}
-                            <button onclick="quickAction(${p.id})" class="text-blue-600 text-[10px] font-black mt-2">+ NEXT ACTION</button>
+                            ${subs.map(s => `<div class="text-xs text-slate-500 flex items-center gap-2"><span>→</span> ${s.text}</div>`).join('')}
+                            <button onclick="quickAction(${p.id})" class="text-blue-600 text-[10px] font-black mt-2 hover:underline">+ 增加下一步行动</button>
                         </div>
                     </div>
                 `;
             }).join('');
         } else {
-            view.innerHTML = display.map(i => `
-                <div class="bg-white p-4 rounded-2xl shadow-sm flex items-center justify-between group">
-                    <div class="flex items-center gap-4">
-                        <input type="checkbox" onchange="completeItem(${i.id})" class="w-5 h-5 rounded-full border-slate-200">
-                        <div>
-                            <div class="font-bold text-slate-700">${i.text}</div>
-                            <div class="flex gap-2 mt-1">
-                                ${i.context ? `<span class="text-[9px] font-bold text-blue-400 uppercase">${i.context}</span>` : ''}
-                                ${i.parentId ? `<span class="text-[9px] font-bold text-purple-300 uppercase">📌 ${db.items.find(p=>p.id===i.parentId)?.text}</span>` : ''}
+            view.innerHTML = display.length === 0 ? `<div class="text-center py-20 text-slate-300 italic">清单空空如也，心如止水。</div>` : 
+                display.map(i => `
+                    <div class="bg-white p-4 rounded-2xl shadow-sm flex items-center justify-between group hover:shadow-md transition">
+                        <div class="flex items-center gap-4">
+                            <input type="checkbox" onchange="completeItem(${i.id})" class="w-5 h-5 rounded-full border-slate-200 text-blue-600 focus:ring-0">
+                            <div>
+                                <div class="font-bold text-slate-700">${i.text}</div>
+                                <div class="flex gap-2 mt-1">
+                                    ${i.context ? `<span class="text-[9px] font-bold text-blue-400 uppercase tracking-tighter">${i.context}</span>` : ''}
+                                    ${i.parentId ? `<span class="text-[9px] font-bold text-purple-300 uppercase tracking-tighter">📌 ${db.items.find(p=>p.id===i.parentId)?.text}</span>` : ''}
+                                </div>
                             </div>
                         </div>
+                        <button onclick="openEdit(${i.id})" class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-blue-600 transition">⚙️</button>
                     </div>
-                    <button onclick="openEdit(${i.id})" class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-blue-600">⚙️</button>
-                </div>
-            `).join('');
+                `).join('');
         }
         document.getElementById('badge-inbox').innerText = db.items.filter(i => i.status === 'inbox' && !i.done).length || '';
+        const stuck = db.items.filter(i => i.status === 'projects' && !i.done && !db.items.some(a => a.parentId === i.id && !a.done)).length;
+        document.getElementById('badge-stuck').innerText = stuck ? `🛑 ${stuck}` : '';
     }
 
     function openEdit(id) {
@@ -158,12 +178,11 @@
         document.getElementById('editPurpose').value = item.purpose || "";
         document.getElementById('editArea').value = item.area || "";
         
-        // 动态展示项目字段
         document.getElementById('projectMeta').classList.toggle('hidden', item.status !== 'projects');
         document.getElementById('parentSelectBox').classList.toggle('hidden', item.status === 'projects');
 
         const sel = document.getElementById('editParent');
-        sel.innerHTML = '<option value="">None</option>' + db.items.filter(i => i.status === 'projects' && !i.done && i.id !== id).map(p => 
+        sel.innerHTML = '<option value="">None (独立行动)</option>' + db.items.filter(i => i.status === 'projects' && !i.done && i.id !== id).map(p => 
             `<option value="${p.id}" ${item.parentId === p.id ? 'selected' : ''}>${p.text}</option>`).join('');
         
         document.getElementById('editModal').classList.remove('hidden');
@@ -181,7 +200,8 @@
     }
 
     function updateStatus(status) {
-        db.items.find(i => i.id === editingId).status = status;
+        const item = db.items.find(i => i.id === editingId);
+        item.status = status;
         saveChanges();
     }
 
@@ -189,8 +209,8 @@
     function completeItem(id) { db.items.find(i => i.id === id).done = true; save(); }
     function closeModal() { document.getElementById('editModal').classList.add('hidden'); }
     function deleteItem() { db.items = db.items.filter(i => i.id !== editingId); closeModal(); save(); }
-    function quickAction(pid) { const t = prompt("Next Action?"); if(t) { db.items.push({ id: Date.now(), text: t, status: 'next', parentId: pid, done: false }); save(); } }
-    function exportData() { const blob = new Blob([JSON.stringify(db)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `GTD_OS_v5.1.json`; a.click(); }
+    function quickAction(pid) { const t = prompt("下一步行动是什么？"); if(t) { db.items.push({ id: Date.now(), text: t, status: 'next', parentId: pid, done: false }); save(); } }
+    function exportData() { const blob = new Blob([JSON.stringify(db)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `GTD_Backup.json`; a.click(); }
 
     document.getElementById('quickInput').addEventListener('keypress', (e) => {
         if(e.key === 'Enter' && e.target.value) {
